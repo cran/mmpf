@@ -4,9 +4,9 @@
 \alias{marginalPrediction}
 \title{marginalizes prediction functions}
 \usage{
-marginalPrediction(data, vars, n, model, uniform = TRUE, points,
-  aggregate.fun = mean, predict.fun = function(object, newdata)
-  predict(object, newdata = newdata))
+marginalPrediction(data, vars, n, model, uniform = TRUE, points, int.points,
+  aggregate.fun = function(x) sum(x)/length(x),
+  predict.fun = function(object, newdata) predict(object, newdata = newdata))
 }
 \arguments{
 \item{data}{a \code{data.frame} which contains the columns specified by \code{vars} and at least one additional column. should correspond to the set of columns used to train the \code{model}.}
@@ -21,7 +21,9 @@ marginalPrediction(data, vars, n, model, uniform = TRUE, points,
 
 \item{points}{a named list which gives specific points for \code{vars}. specifying this argument overrides \code{uniform}.}
 
-\item{aggregate.fun}{what function to aggregate the predictions with. this function takes a single argument \code{x} and returns a vector. the default is \code{mean}.}
+\item{int.points}{a integer vector giving indices of the points in \code{data} to marginalize over.}
+
+\item{aggregate.fun}{what function to aggregate the predictions with. this function takes a single argument \code{x} and returns a vector. the default is \code{sum(x) / length(x)}.}
 
 \item{predict.fun}{what function to generate predictions using \code{model}. default is the predict method for \code{model}. this function must have two arguments, \code{object} and \code{newdata}.}
 }
@@ -35,7 +37,7 @@ monte-carlo integration of prediction functions
 X = replicate(3, rnorm(100))
 y = X \%*\% runif(3)
 data = data.frame(X, y)
-fit = lm(y ~ -1 + X)
+fit = lm(y ~ ., data)
 
 marginalPrediction(data.frame(X), "X2", c(10, 25), fit,
   aggregate.fun = function(x) c("mean" = mean(x), "variance" = var(x)))
