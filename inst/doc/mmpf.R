@@ -13,7 +13,7 @@ fit = randomForest(Fertility ~ ., swiss)
 mp = marginalPrediction(swiss[, -1], "Education", c(10, nrow(swiss)), fit)
 mp
 
-ggplot(data.frame(mp), aes(Education, prediction)) + geom_point() + geom_line()
+ggplot(data.frame(mp), aes(Education, preds)) + geom_point() + geom_line()
 
 ## ---- fig.width = 7, fig.height = 5--------------------------------------
 mp = marginalPrediction(swiss[, -1], "Education", c(10, 5), fit, aggregate.fun = identity)
@@ -29,8 +29,6 @@ mp = marginalPrediction(iris[, -ncol(iris)], "Petal.Width", c(10, 25), fit,
   predict.fun = function(object, newdata) predict(object, newdata = newdata, type = "prob"))
 mp
 
-colnames(mp$prediction) = levels(iris$Species)
-names(mp)[1] = ""
 plt = melt(data.frame(mp), id.vars = "Petal.Width", variable.name = "class",
   value.name = "prob")
 
@@ -40,9 +38,6 @@ ggplot(plt, aes(Petal.Width, prob, color = class)) + geom_line() + geom_point()
 mp = marginalPrediction(iris[, -ncol(iris)], c("Petal.Width", "Petal.Length"), c(10, 25), fit,
   predict.fun = function(object, newdata) predict(object, newdata = newdata, type = "prob"))
 mp
-
-colnames(mp$prediction) = levels(iris$Species)
-names(mp) = NULL
 
 plt = melt(data.frame(mp), id.vars = c("Petal.Width", "Petal.Length"),
   variable.name = "class", value.name = "prob")
